@@ -1,0 +1,23 @@
+name: clickstack
+services:
+  ch-server:
+    image: clickhouse/clickhouse-server:26.1-alpine
+    # WARNING: Exposing the database port will make it accessible from outside the container,
+    # potentially allowing unauthorized access. If you uncomment the ports below,
+    # ensure to secure your database (e.g., with strong authentication, proper network rules, and firewalls).
+    # ports:
+    #   - 8123:8123 # http api
+    #   - 9000:9000 # native
+    environment:
+      # default settings
+      CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT: 1
+    volumes:
+      - ./src/clickhouse-server/config.yaml:/etc/clickhouse-server/config.yaml
+      - ./src/clickhouse-server/users.yaml:/etc/clickhouse-server/users.yaml
+      - .volumes/ch_data:/var/lib/clickhouse
+      - .volumes/ch_logs:/var/log/clickhouse-server
+    restart: on-failure
+    networks:
+      - internal
+networks:
+  internal:
